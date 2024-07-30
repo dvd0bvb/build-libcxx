@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  address_sanitizer:
+  build-and-package:
     runs-on: ubuntu-24.04
 
     steps:
@@ -35,6 +35,6 @@ jobs:
         asset_path: ${{ github.workspace }}/libc++-with-msan.deb
         asset_name: libc++-with-msan.deb
         asset_content_type: application/vnd.debian.binary-package
-        
+
 
     
