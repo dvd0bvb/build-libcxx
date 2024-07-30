@@ -17,21 +17,21 @@ jobs:
         ./build-with-msan.sh
         ./build-deb.sh
 
-    - name: Create Release
-      uses: actions/create-release@latest
-      id: create_release
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: libc++-with-msan
+    # - name: Create Release
+    #   uses: actions/create-release@latest
+    #   id: create_release
+    #   env: 
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     tag_name: ${{ github.ref }}
+    #     release_name: libc++-with-msan
 
     - name: Upload Artifacts
       uses: actions/upload-release-asset@latest
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: https://github.com/dvd0bvb/libcpp-with-msan/releases/tag/v1.0.0
         asset_path: ${{ github.workspace }}/libc++-with-msan.deb
         asset_name: libc++-with-msan.deb
         asset_content_type: application/vnd.debian.binary-package
