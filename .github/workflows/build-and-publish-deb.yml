@@ -1,0 +1,40 @@
+name: Build libc++ with msan
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  address_sanitizer:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Build
+      run: |
+        ./build-with-msan.sh
+        ./build-deb.sh
+
+    - name: Create Release
+      uses: actions/create-release@latest
+      id: create_release
+      env: 
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: libc++-with-msan
+
+    - name: Upload Artifacts
+      uses: actions/upload-release-asset@latest
+      env: 
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ github.workspace }}/libc++-with-msan.deb
+        asset_name: libc++-with-msan.deb
+        asset_content_type: application/vnd.debian.binary-package
+        
+
+    
