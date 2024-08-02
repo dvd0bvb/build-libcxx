@@ -22,8 +22,9 @@ jobs:
       id: create-release
       with:
         owner: dvd0bvb
-        repo: libcpp-with-msan
+        repository: ${{ github.repository }}
         excludes: prerelease, draft
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Artifacts
       uses: svenstaro/upload-release-action@v2
