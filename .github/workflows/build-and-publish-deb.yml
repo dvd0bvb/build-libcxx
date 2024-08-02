@@ -22,7 +22,7 @@ jobs:
       id: create-release
       with:
         owner: dvd0bvb
-        repo: libc++-with-msan
+        repo: libcpp-with-msan
         excludes: prerelease, draft
 
     - name: Upload Artifacts
