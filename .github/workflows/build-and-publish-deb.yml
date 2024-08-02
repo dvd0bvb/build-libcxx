@@ -17,24 +17,19 @@ jobs:
         ./build-with-msan.sh
         ./build-deb.sh
 
-    # - name: Create Release
-    #   uses: actions/create-release@latest
-    #   id: create_release
-    #   env: 
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     tag_name: ${{ github.ref }}
-    #     release_name: libc++-with-msan
+    - name: Create Release
+      uses: pozetroninc/github-action-get-latest-release@master
+      id: create-release
+      with:
+        owner: dvd0bvb
+        repo: libc++-with-msan
+        excludes: prerelease, draft
 
     - name: Upload Artifacts
-      uses: actions/upload-release-asset@latest
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: svenstaro/upload-release-action@v2
       with:
-        upload_url: https://github.com/dvd0bvb/libcpp-with-msan/releases/tag/v1.0.0
-        asset_path: ${{ github.workspace }}/libc++-with-msan.deb
-        asset_name: libc++-with-msan.deb
-        asset_content_type: application/vnd.debian.binary-package
-
-
-    
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: libc++-with-msan.deb
+        asset_name: libc++-with-msan-${{ steps.create-release.outputs.release }}
+        tag: ${{ steps.create-release.outputs.release }}
+        overwrite: true
