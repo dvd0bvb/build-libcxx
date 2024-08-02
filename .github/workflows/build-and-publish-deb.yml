@@ -32,6 +32,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: libc++-with-msan.deb
-        asset_name: libc++-with-msan-${{ steps.create-release.outputs.release }}
+        asset_name: libc++-with-msan-${{ steps.create-release.outputs.release }}.deb
         tag: ${{ steps.create-release.outputs.release }}
         overwrite: true
