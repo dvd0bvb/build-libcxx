@@ -12,15 +12,14 @@ jobs:
     strategy: 
       matrix:
         include:
-          - msan: false
-          - msan: true
+          - msan: [true, false]
           
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         run: git clone --depth 1 --branch llvmorg-${{ github.event.inputs.version }} https://github.com/llvm/llvm-project.git
       - name: Configure
-        if: matrix.msan == 'false'
+        if: !matrix.msan
         working-directory: llvm-project
         run: |
           cmake -G "Unix Makefiles" -S runtimes -B build \
@@ -29,7 +28,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
       - name: Configure with MSAN
-        if: matrix.msan == 'true'
+        if: matrix.msan
         working-directory: llvm-project
         run: |
           cmake -G "Unix Makefiles" -S runtimes -B build \
