@@ -44,7 +44,7 @@ jobs:
       - name: Make output dir
         id: output-dir
         run: |
-          if [[${{ matrix.msan }} == "true"]]; then
+          if [["${{ matrix.msan }}" == "true"]]; then
             OUT_DIR="libc++-${{ github.event.inputs.version }}-msan"
           else
             OUT_DIR="libc++-${{ github.event.inputs.version }}"
@@ -59,6 +59,7 @@ jobs:
           cp -r llvm-project/build/include/* $OUT_DIR/usr/include/libcxx
           cp -r llvm-project/build/include/* $OUT_DIR/usr/lib/libcxx
           mkdir -p $OUT_DIR/DEBIAN
+          sed -e "s/PACKAGE_NAME/$OUT_DIR/g" -e "s/VERSION_STRING/${{ github.event.inputs.version }}/g" control
           sed -e "s/PACKAGE_NAME/$OUT_DIR/g" -e "s/VERSION_STRING/${{ github.event.inputs.version }}/g" control >> $OUT_DIR/DEBIAN/control
           dpkg-deb --build $OUT_DIR
       - name: Upload
