@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         run: git clone --depth 1 --branch llvmorg-${{ github.event.inputs.version }} https://github.com/llvm/llvm-project.git
       - name: Configure
-        if: !matrix.msan
+        if: ${{ ! matrix.msan }}
         working-directory: llvm-project
         run: |
           cmake -G "Unix Makefiles" -S runtimes -B build \
