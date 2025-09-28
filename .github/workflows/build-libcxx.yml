@@ -1,0 +1,85 @@
+name: Build libc++ with msan
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: libc++ version to build
+        required: true
+
+jobs:
+  build:
+    strategy: 
+      matrix:
+        include:
+          - msan: false
+          - msan: true
+          
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        run: git clone --depth 1 --branch ${{ github.event.inputs.version }} https://github.com/llvm/llvm-project.git
+      - name: Configure
+        if: matrix.msan == 'false'
+        working-directory: llvm-project
+        run: |
+          cmake -G "Unix Makefiles" -S runtimes -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+      - name: Configure with MSAN
+        if: matrix.msan == 'true'
+        working-directory: llvm-project
+        run: |
+          cmake -G "Unix Makefiles" -S runtimes -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+            -DLLVM_USE_SANITIZER=MemoryWithOrigins
+      - name: Build
+        working-directory: llvm-project
+        run: cmake --build build -- cxx cxxabi
+      - name: Make output dir
+        id: output-dir
+        run: |
+          if [[${{ matrix.msan }} == "true"]]; then
+            OUT_DIR="libc++-${{ github.event.inputs.version }}-msan"
+          else
+            OUT_DIR="libc++-${{ github.event.inputs.version }}"
+          fi
+          echo "out-dir=$OUT_DIR\n" >> $GITHUB_OUTPUT
+      - name: Package
+        env: 
+          OUT_DIR: ${{ steps.output-dir.outputs.out-dir }}
+        run: |
+          mkdir -p $OUT_DIR/usr/include/libcxx
+          mkdir -p $OUT_DIR/usr/lib/libxcc
+          cp -r llvm-project/build/include/* $OUT_DIR/usr/include/libcxx
+          cp -r llvm-project/build/include/* $OUT_DIR/usr/lib/libcxx
+          dpkg-deb --build $OUT_DIR
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          name: ${{ steps.output-dir.outputs.out-dir }}
+          path: "*.deb"
+
+  upload:
+    runs-on: ubuntu-24.04
+    needs: [build]
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+      - name: Move artifacts
+        run: |
+          mv */* .
+          find . -type d -empty -delete
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          draft: false
+          tag: ${{ github.event.inputs.version }}
+          artifacts: libc++*
+          token: ${{ secrets.GITHUB_TOKEN }}
