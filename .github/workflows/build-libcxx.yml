@@ -45,7 +45,7 @@ jobs:
         id: output-dir
         run: |
           MSAN_ENABLED=${{ matrix.msan }}
-          if [[ "$MSAN_ENABLED" == "true"]]; then
+          if [ "$MSAN_ENABLED" = "true"]; then
             OUT_DIR="libc++-${{ github.event.inputs.version }}-msan"
           else
             OUT_DIR="libc++-${{ github.event.inputs.version }}"
