@@ -1,4 +1,4 @@
-name: Build libc++ with msan
+name: Build libc++
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        run: git clone --depth 1 --branch ${{ github.event.inputs.version }} https://github.com/llvm/llvm-project.git
+        run: git clone --depth 1 --branch llvmorg-${{ github.event.inputs.version }} https://github.com/llvm/llvm-project.git
       - name: Configure
         if: matrix.msan == 'false'
         working-directory: llvm-project
