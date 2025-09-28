@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout LLVM
         run: git clone --depth 1 --branch llvmorg-${{ github.event.inputs.version }} https://github.com/llvm/llvm-project.git
       - name: Configure
         if: ${{ ! matrix.msan }}
@@ -56,6 +58,8 @@ jobs:
           mkdir -p $OUT_DIR/usr/lib/libxcc
           cp -r llvm-project/build/include/* $OUT_DIR/usr/include/libcxx
           cp -r llvm-project/build/include/* $OUT_DIR/usr/lib/libcxx
+          mkdir -p $OUT_DIR/DEBIAN
+          sed -e "s/PACKAGE_NAME/$OUT_DR/g" -e "s/VERSION_STRING/${{ github.event.inputs.version }}/g" control >> $OUT_DIR/control
           dpkg-deb --build $OUT_DIR
       - name: Upload
         uses: actions/upload-artifact@v4

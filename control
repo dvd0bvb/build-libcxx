@@ -1,5 +1,5 @@
-Package: libc++-with-msan
-Version: 1.0
+Package: PACKAGE_NAME
+Version: VERSION_STRING
 Maintainer: David Brill
-Architecture: all
+Architecture: All
 Description: Package contiaining libc++, libc++abi, and libunwind for use in building binaries which will run memory sanitizer.
