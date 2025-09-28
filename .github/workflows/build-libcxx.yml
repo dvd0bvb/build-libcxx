@@ -11,8 +11,7 @@ jobs:
   build:
     strategy: 
       matrix:
-        include:
-          - msan: [true, false]
+          msan: [true, false]
           
     runs-on: ubuntu-24.04
     steps:
