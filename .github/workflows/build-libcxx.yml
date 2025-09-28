@@ -20,22 +20,22 @@ jobs:
       - name: Configure
         if: ${{ ! matrix.msan }}
         working-directory: llvm-project
-        run: |
-          cmake -G "Unix Makefiles" -S runtimes -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=clang \
-            -DCMAKE_CXX_COMPILER=clang++ \
-            -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+        run: >
+          cmake -G "Unix Makefiles" -S runtimes -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=clang
+          -DCMAKE_CXX_COMPILER=clang++
+          -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind"
       - name: Configure with MSAN
         if: matrix.msan
         working-directory: llvm-project
-        run: |
-          cmake -G "Unix Makefiles" -S runtimes -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=clang \
-            -DCMAKE_CXX_COMPILER=clang++ \
-            -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
-            -DLLVM_USE_SANITIZER=MemoryWithOrigins
+        run: >
+          cmake -G "Unix Makefiles" -S runtimes -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=clang
+          -DCMAKE_CXX_COMPILER=clang++
+          -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind"
+          -DLLVM_USE_SANITIZER=MemoryWithOrigins
       - name: Build
         working-directory: llvm-project
         run: cmake --build build -- cxx cxxabi
