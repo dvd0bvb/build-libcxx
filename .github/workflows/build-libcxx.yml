@@ -55,10 +55,12 @@ jobs:
         env: 
           OUT_DIR: ${{ steps.output-dir.outputs.out-dir }}
         run: |
-          mkdir -p $OUT_DIR/usr/include/libcxx
-          mkdir -p $OUT_DIR/usr/lib/libxcc
-          cp -r llvm-project/build/include/* $OUT_DIR/usr/include/libcxx
-          cp -r llvm-project/build/include/* $OUT_DIR/usr/lib/libcxx
+          INCLUDE_DIR=usr/local/include/libcxx
+          LIB_DIR=usr/local/lib/libcxx
+          mkdir -p $OUT_DIR/$INCLUDE_DIR
+          mkdir -p $OUT_DIR/$LIB_DIR
+          cp -r llvm-project/build/include/* $OUT_DIR/$INCLUDE_DIR
+          cp -r llvm-project/build/lib/* $OUT_DIR/$LIB_DIR
           mkdir -p $OUT_DIR/DEBIAN
           sed -e "s/PACKAGE_NAME/$OUT_DIR/g" -e "s/VERSION_STRING/${{ github.event.inputs.version }}/g" control >> $OUT_DIR/DEBIAN/control
           dpkg-deb --build $OUT_DIR
